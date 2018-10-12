@@ -152,3 +152,90 @@ Once your Twilio account is created, complete the following tasks.
        });
      };
      ```
+
+**NOTE**: These functions will run automatically each time one of your company phone
+numbers (which haven't yet been purchased) receive a call or SMS message. This
+code will:
+
+- Inspect the phone number that is being called (the company phone number)
+- Find the corresponding employee account in Okta who "owns" that number
+- Retrieve the employee's personal cell phone number from Okta
+- Forward the incoming call or SMS message to the employee's personal cell phone
+
+4. Visit the [Twilio function configuration
+   page](https://www.twilio.com/console/runtime/functions/configure) and add two
+   new environment variables. The first one should be named `OKTA_ORG_URL` and
+   the value should be the Org URL value you wrote down from your Okta
+   dashboard. The second value should be called `OKTA_TOKEN` and should be the
+   value of the Okta token you created earlier. These variables will be made
+   available to the functions you defined earlier.
+5.  Visit the [Twilio function configuration
+   page](https://www.twilio.com/console/runtime/functions/configure) and scroll
+   down to the **Dependencies** section. 
+   new environment variables. Add a new dependency. The name of the dependency
+   should be `@okta/okta-sdk-nodejs` and the value should be `1.2.0`. This
+   setting tells Twilio to download and install the specified Node.js dependency
+   so your code can talk to Okta.
+6. On the same page, make sure the **Enable ACCOUNT_SID and AUTH_TOKEN**
+   checkbox is enabled. This will make your Twilio API keys available to your
+   serverless code as environment variables.
+7. Visit the [Twilio runtime overview
+   page](https://www.twilio.com/console/runtime/overview) and copy down your
+   runtime domain value. It should look something like
+   `toolbox-bobcat-2584.twil.io`. You will need this later.
+
+
+## Install and Configure Twilify
+
+Next, you need to install
+[okta-twilify](https://github.com/oktadeveloper/okta-twilify). This is a program
+I built which automatically looks for any new users stored in Okta (that have a
+mobile phone set in their account profile), then uses Twilio to purchase a
+company phone number for them, and configure the number for call and SMS
+forwarding.
+
+`twilify` is meant to provide simple phone system functionality to companies
+that use Okta to store user accounts -- why use an expensive phone system if you
+can build it yourself for pennies on the dollar? =)
+
+`twilify` is built using Node.js, so you'll need to [install
+Node](https://nodejs.org/en/download/package-manager/) before continuing.
+
+Once you've got Node installed, run the following command to configure
+`twilify`:
+
+```console
+$ twilify --init
+```
+
+This will prompt you for some information you should have collected while going
+through the tutorial above:
+
+- Your Okta token
+- Your Okta Org URL
+- Your Twilio Account SID
+- Your Twilio Auth Token
+- Your company's phone number prefix (415, 818, etc.). This will ensure all
+  employees have a similar phone number
+- Your Twilio runtime URL. You'll need to modify this slightly... If your Twilio
+  runtime base URL was `toolbox-bobcat-2584.twil.io`, you'll want to set this
+  value to `https://toolbox-bobcat-2584.twil.io`.
+
+Once you've configured `twilify`, run the command below to start the process and
+purchase a phone number for your test employee! If everything goes OK, you
+should see output like the below:
+
+```console
+$ twilify
+Cleaned up the formatting of a phone number (+18182179229) for Randall Degges.
+Purchased a new company number (+19253294108) for Randall Degges.
+```
+
+
+## Test Out Your New Number!
+
+Now that your employee has a new number (925-329-4108), give it a go! Ask a
+friend to call and text your new number.
+
+Once you've verified everything is working, go talk to an Oktanaut and have them
+test it. If everything works, you can claim your prize!
